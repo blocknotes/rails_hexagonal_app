@@ -1,0 +1,10 @@
+<div>
+  <div class="item"><b>Name</b>: <%= author.name %></div>
+  <div class="item"><b>Age</b>: <%= author.age %></div>
+  <div class="item"><b>E-mail</b>: <%= author.email %></div>
+
+  <% if author.profile %>
+    <hr/>
+    <div class="item"><b>More information</b>: <%= author.profile.description %></div>
+  <% end %>
+</div>

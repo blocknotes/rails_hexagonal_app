@@ -8,9 +8,24 @@
 
     <%= stylesheet_link_tag "application" %>
     <%= javascript_importmap_tags %>
-  </head>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+    <style>
+      body { background: #f4f4f4; min-height: 100vh; }
+      .button_to { display: inline-block; }
+      .container { background: #fff; min-height: 100vh; padding-top: 25px; }
+      .field label { display: inline-block; margin-right: 10px; padding-left: 5px; }
+    </style>
+  </head>
   <body>
-    <%= yield %>
+    <div class="container">
+      <% if flash[:notice] %>
+        <div class="notice"><%= flash[:notice] %></div>
+      <% end %>
+      <%= yield %>
+    </div>
   </body>
 </html>

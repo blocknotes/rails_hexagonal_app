@@ -1,0 +1,27 @@
+---
+inherit_from:
+  - https://relaxed.ruby.style/rubocop.yml
+
+require:
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+    - bin/*
+    - db/*
+  NewCops: enable
+  SuggestExtensions: false
+
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 20
+
+Style/BlockComments:
+  Exclude:
+    - spec/spec_helper.rb
+
+Style/RedundantFetchBlock:
+  Exclude:
+    - config/puma.rb

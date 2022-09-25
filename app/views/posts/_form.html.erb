@@ -1,0 +1,46 @@
+<%= form_for @post do |form| %>
+  <% if @post.errors.any? %>
+    <div><%= "#{pluralize(@post.errors.count, "error")} prohibited this post from being saved:" %></div>
+    <ul>
+      <% @post.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field">
+    <div class="author">Author:</div>
+    <%= form.collection_select :author_id, Author.order(:name), :id, :name %>
+  </div>
+
+  <div class="field">
+    <div class="title">Title:</div>
+    <%= form.text_field :title %>
+  </div>
+
+  <div class="field">
+    <div class="description">Description:</div>
+    <%= form.text_area :description %>
+  </div>
+
+  <div class="field">
+    <div class="category">Category:</div>
+    <%= form.text_field :category %>
+  </div>
+
+  <div class="field">
+    <div class="position">Position:</div>
+    <%= form.text_field :position %>
+  </div>
+
+  <div class="field">
+    <div class="tags">Tags:</div>
+    <%= form.collection_check_boxes :tag_ids, Tag.order(:name), :id, :name %>
+  </div>
+
+  <br/>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

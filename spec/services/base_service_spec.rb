@@ -19,4 +19,28 @@ RSpec.describe BaseService do
       expect(child_service_instance).to have_received(:call)
     end
   end
+
+  describe '#notify' do
+    subject(:notify) { base_service_class.new.notify(listeners, message, *args) }
+
+    let(:args) { [:some, :args] }
+    let(:message) { :some_message }
+    let(:listener) { Listener.new }
+    let(:listener_class) do
+      Class.new do
+        def some_message(_arg1, _arg2); end
+      end
+    end
+    let(:listeners) { [listener] }
+
+    before do
+      stub_const('Listener', listener_class)
+      allow(listener).to receive(message)
+    end
+
+    it 'sends the specified message to the listeners' do
+      notify
+      expect(listener).to have_received(message).with(*args)
+    end
+  end
 end

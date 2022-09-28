@@ -10,8 +10,10 @@ class PostsController < ApplicationController
 
   # GET /posts/export
   def export
-    csv_data = Posts::ExportService.call
+    Posts::ExportService.call(listeners: [self])
+  end
 
+  def export_success(csv_data)
     respond_to do |format|
       format.csv do
         response.headers['Content-Type'] = 'text/csv'
@@ -35,36 +37,54 @@ class PostsController < ApplicationController
 
   # POST /posts/1/publish
   def publish
+    Posts::PublishService.call(post: @post, listeners: [self])
+  end
+
+  def publish_failure(post, message)
+    notice = message == :already_published ? 'Post already published.' : 'Post was not successfully published.'
     respond_to do |format|
-      if Posts::PublishService.call(post: @post)
-        format.html { redirect_to @post, notice: 'Post was successfully published.' }
-      else
-        format.html { redirect_to @post, notice: 'Post already published.' }
-      end
+      format.html { redirect_to post, notice: notice }
+    end
+  end
+
+  def publish_success(post)
+    respond_to do |format|
+      format.html { redirect_to post, notice: 'Post was successfully published.' }
     end
   end
 
   # POST /posts
   def create
-    @post = Post.new(post_params)
+    Posts::CreateService.call(attrs: post_params, listeners: [self])
+  end
 
+  def create_failure(post)
+    @post = post
     respond_to do |format|
-      if Posts::UpdateService.call(post: @post)
-        format.html { redirect_to @post, notice: 'Post was successfully created.' }
-      else
-        format.html { render :new }
-      end
+      format.html { render :new }
+    end
+  end
+
+  def create_success(post)
+    respond_to do |format|
+      format.html { redirect_to post, notice: 'Post was successfully created.' }
     end
   end
 
   # PATCH/PUT /posts/1
   def update
+    Posts::UpdateService.call(post: @post, attrs: post_params, listeners: [self])
+  end
+
+  def update_failure(post)
     respond_to do |format|
-      if Posts::UpdateService.call(post: @post, attrs: post_params)
-        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
-      else
-        format.html { render :edit }
-      end
+      format.html { render :edit }
+    end
+  end
+
+  def update_success(post)
+    respond_to do |format|
+      format.html { redirect_to post, notice: 'Post was successfully updated.' }
     end
   end
 

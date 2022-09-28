@@ -18,6 +18,12 @@ Lint/UnusedMethodArgument:
 RSpec/ExampleLength:
   Max: 20
 
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
 Style/BlockComments:
   Exclude:
     - spec/spec_helper.rb

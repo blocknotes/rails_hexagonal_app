@@ -10,14 +10,6 @@ RSpec.describe Posts::PublishService do
 
     let(:author) { Author.new(email: 'some@email.it') }
 
-    context 'with an invalid post' do
-      it 'raises an exception' do
-        post = Post.new(title: 'Some title', published_at: nil)
-        post.save(validate: false)
-        expect { described_class.call(post: post) }.to raise_exception(ActiveRecord::RecordInvalid)
-      end
-    end
-
     context 'with a post to publish' do
       let(:post) { Post.create!(author: author, title: 'Some title', published_at: nil) }
 
@@ -33,6 +25,39 @@ RSpec.describe Posts::PublishService do
         current_attributes = post.attributes
         call
         expect(post.reload.attributes).to eq current_attributes
+      end
+    end
+
+    context 'with a listener' do
+      subject(:call) { service_class.call(post: post, listeners: [listener]) }
+
+      let(:listener) { double('SomeListener', publish_failure: nil, publish_success: nil) }
+
+      context 'when the publishing is successful' do
+        let(:post) { instance_double(Post, published_at: nil, update: true) }
+
+        it 'notifies the listeners of the success' do
+          call
+          expect(listener).to have_received(:publish_success).with(post)
+        end
+      end
+
+      context 'when the publishing is failing' do
+        let(:post) { instance_double(Post, published_at: nil, update: false) }
+
+        it 'notifies the listeners of the failure' do
+          call
+          expect(listener).to have_received(:publish_failure).with(post, :update_failed)
+        end
+      end
+
+      context 'with an already published post' do
+        let(:post) { instance_double(Post, published_at: Time.current, update: false) }
+
+        it 'notifies the listeners of the failure' do
+          call
+          expect(listener).to have_received(:publish_failure).with(post, :already_published)
+        end
       end
     end
   end

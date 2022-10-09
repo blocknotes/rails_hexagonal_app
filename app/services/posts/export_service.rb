@@ -3,7 +3,7 @@
 module Posts
   class ExportService < BaseService
     def call(listeners: [])
-      posts = Post.all.annotate('export posts').to_a
+      posts = PostsRepository.list_posts_with_authors
       csv_data = _prepare_csv_data(posts: posts)
       notify(listeners, :export_success, csv_data)
       csv_data

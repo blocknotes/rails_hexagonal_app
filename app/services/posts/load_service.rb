@@ -3,7 +3,7 @@
 module Posts
   class LoadService < BaseService
     def call(id)
-      Post.find(id)
+      PostsRepository.find(id)
     end
   end
 end

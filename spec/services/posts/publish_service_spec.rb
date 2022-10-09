@@ -10,21 +10,25 @@ RSpec.describe Posts::PublishService do
 
     let(:author) { Author.new(email: 'some@email.it') }
 
-    context 'with a post to publish' do
-      let(:post) { Post.create!(author: author, title: 'Some title', published_at: nil) }
+    context 'with a post with published_at nil' do
+      let(:post) { double(PostEntity, published_at: nil) }
+
+      before { allow(PostsRepository).to receive(:update).and_return(true) }
 
       it 'publishes the post', :freeze_time do
-        expect { call }.to change(post, :published_at).from(nil).to(Time.current)
+        call
+        expect(PostsRepository).to have_received(:update).with(post, published_at: Time.current)
       end
     end
 
     context 'with a published post' do
-      let(:post) { Post.create!(author: author, title: 'Some title', published_at: Time.current) }
+      let(:post) { double(PostEntity, published_at: 1.day.ago) }
+
+      before { allow(PostsRepository).to receive(:update).and_return(true) }
 
       it 'exits without updating the post' do
-        current_attributes = post.attributes
         call
-        expect(post.reload.attributes).to eq current_attributes
+        expect(PostsRepository).not_to have_received(:update)
       end
     end
 
@@ -34,7 +38,9 @@ RSpec.describe Posts::PublishService do
       let(:listener) { double('SomeListener', publish_failure: nil, publish_success: nil) }
 
       context 'when the publishing is successful' do
-        let(:post) { instance_double(Post, published_at: nil, update: true) }
+        let(:post) { double(PostEntity, published_at: nil) }
+
+        before { allow(PostsRepository).to receive(:update).and_return(true) }
 
         it 'notifies the listeners of the success' do
           call
@@ -43,7 +49,9 @@ RSpec.describe Posts::PublishService do
       end
 
       context 'when the publishing is failing' do
-        let(:post) { instance_double(Post, published_at: nil, update: false) }
+        let(:post) { double(PostEntity, published_at: nil) }
+
+        before { allow(PostsRepository).to receive(:update).and_return(false) }
 
         it 'notifies the listeners of the failure' do
           call
@@ -52,7 +60,7 @@ RSpec.describe Posts::PublishService do
       end
 
       context 'with an already published post' do
-        let(:post) { instance_double(Post, published_at: Time.current, update: false) }
+        let(:post) { double(PostEntity, published_at: Time.current) }
 
         it 'notifies the listeners of the failure' do
           call

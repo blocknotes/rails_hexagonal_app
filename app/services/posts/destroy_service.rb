@@ -3,7 +3,7 @@
 module Posts
   class DestroyService < BaseService
     def call(post:, listeners: [])
-      post.destroy.tap do |result|
+      PostsRepository.destroy(post).tap do |result|
         notify(listeners, result ? :destroy_success : :destroy_failure, result)
       end
     end

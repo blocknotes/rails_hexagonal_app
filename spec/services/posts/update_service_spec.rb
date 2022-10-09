@@ -10,16 +10,20 @@ RSpec.describe Posts::UpdateService do
 
     let(:attrs) { { name: 'Some name' } }
     let(:listener) { double('SomeListener', update_failure: nil, update_success: nil) }
-    let(:post) { instance_double(Post, update: true) }
+    let(:post) { instance_double(PostEntity) }
 
-    it 'sends the update message to the post', :aggregate_failures do
-      call
-      expect(post).to have_received(:update).with(attrs)
-      expect(listener).to have_received(:update_success).with(post)
+    context 'when the update method succeed' do
+      before { allow(PostsRepository).to receive(:update).and_return(true) }
+
+      it 'sends the update message to the post', :aggregate_failures do
+        call
+        expect(PostsRepository).to have_received(:update).with(post, attrs)
+        expect(listener).to have_received(:update_success).with(post)
+      end
     end
 
     context 'when the update method fails' do
-      let(:post) { instance_double(Post, update: false) }
+      before { allow(PostsRepository).to receive(:update).and_return(false) }
 
       it 'notifies the listeners of the failure' do
         call

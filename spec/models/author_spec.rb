@@ -12,12 +12,4 @@ RSpec.describe Author, type: :model do
       it { is_expected.to be_valid }
     end
   end
-
-  describe '#to_s' do
-    subject(:author) { described_class.new(email: 'some@email.it', name: 'John', age: 20) }
-
-    it 'returns name and age' do
-      expect(author.to_s).to eq 'John (20)'
-    end
-  end
 end

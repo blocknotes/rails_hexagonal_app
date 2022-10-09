@@ -4,7 +4,7 @@ module Posts
   class PublishService < BaseService
     def call(post:, listeners: [])
       if post.published_at.nil?
-        if post.update(published_at: Time.current)
+        if PostsRepository.update(post, published_at: Time.current)
           notify(listeners, :publish_success, post)
         else
           notify(listeners, :publish_failure, post, :update_failed)

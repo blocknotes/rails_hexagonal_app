@@ -6,25 +6,14 @@ RSpec.describe Posts::LoadService do
   subject(:service_class) { described_class }
 
   describe '.call' do
-    subject(:call) { service_class.call(post_id) }
+    subject(:call) { service_class.call(post.id) }
 
-    context 'with no posts' do
-      let(:post_id) { 1 }
+    let(:post) { double(PostEntity, id: 123) }
 
-      it "returns the empty posts' list" do
-        expect { call }.to raise_exception(ActiveRecord::RecordNotFound)
-      end
-    end
+    before { allow(PostsRepository).to receive(:find).and_return(post) }
 
-    context 'with some posts' do
-      let(:author) { Author.new(email: 'some@email.it') }
-      let(:post_id) { 1001 }
-      let(:post1) { Post.create!(id: post_id, author: author, title: 'First post') }
-
-      it 'loads the post' do
-        post1
-        expect(call).to eq post1
-      end
+    it 'loads the post' do
+      expect(call).to eq post
     end
   end
 end

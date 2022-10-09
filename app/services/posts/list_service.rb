@@ -3,7 +3,7 @@
 module Posts
   class ListService < BaseService
     def call
-      Post.includes(:author).all.to_a
+      PostsRepository.list_posts_with_authors
     end
   end
 end

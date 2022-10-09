@@ -8,22 +8,15 @@ RSpec.describe Posts::ListService do
   describe '.call' do
     subject(:call) { service_class.call }
 
-    context 'with no posts' do
-      it "returns the empty posts' list" do
-        expect(call).to eq []
-      end
+    let(:posts) do
+      [instance_double(PostEntity), instance_double(PostEntity), instance_double(PostEntity)]
     end
 
-    context "with some posts' list" do
-      let(:author) { Author.new(email: 'some@email.it') }
-      let(:posts) do
-        3.times.map { |i| Post.create!(author: author, title: "Some post #{i + 1}") }
-      end
+    before { allow(PostsRepository).to receive(:list_posts_with_authors).and_return(posts) }
 
-      it 'exports the posts' do
-        posts
-        expect(call).to match_array posts
-      end
+    it 'loads the posts' do
+      call
+      expect(PostsRepository).to have_received(:list_posts_with_authors)
     end
   end
 end

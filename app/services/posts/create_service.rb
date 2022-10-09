@@ -3,8 +3,8 @@
 module Posts
   class CreateService < BaseService
     def call(attrs:, listeners: [])
-      post = Post.new(attrs)
-      post.save.tap do |result|
+      post = PostsRepository.init(attrs)
+      PostsRepository.update(post, {}).tap do |result|
         notify(listeners, result ? :create_success : :create_failure, post)
       end
     end

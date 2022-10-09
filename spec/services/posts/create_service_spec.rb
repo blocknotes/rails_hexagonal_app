@@ -10,21 +10,20 @@ RSpec.describe Posts::CreateService do
 
     let(:attrs) { { name: 'Some name' } }
     let(:listener) { double('SomeListener', create_failure: nil, create_success: nil) }
-    let(:post) { instance_double(Post, save: true) }
+    let(:post) { instance_double(PostEntity) }
 
-    before do
-      allow(Post).to receive(:new).and_return(post)
-    end
+    context 'when the save method succeed' do
+      before { allow(PostsRepository).to receive_messages(init: post, update: true) }
 
-    it 'creates a new instance and send the save message to the new post', :aggregate_failures do
-      call
-      expect(Post).to have_received(:new).with(attrs)
-      expect(post).to have_received(:save).with(no_args)
-      expect(listener).to have_received(:create_success).with(post)
+      it 'creates a new instance and send the save message to the new post', :aggregate_failures do
+        call
+        expect(PostsRepository).to have_received(:init).with(attrs)
+        expect(PostsRepository).to have_received(:update)
+      end
     end
 
     context 'when the save method fails' do
-      let(:post) { instance_double(Post, save: false) }
+      before { allow(PostsRepository).to receive_messages(init: post, update: false) }
 
       it 'notifies the listeners of the failure' do
         call

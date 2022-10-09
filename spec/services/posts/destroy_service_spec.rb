@@ -9,18 +9,20 @@ RSpec.describe Posts::DestroyService do
     subject(:call) { service_class.call(post: post, listeners: [listener]) }
 
     let(:listener) { double('SomeListener', destroy_failure: nil, destroy_success: nil) }
-    let(:post) { instance_double(Post) }
+    let(:post) { instance_double(PostEntity) }
 
-    before { allow(post).to receive(:destroy).and_return(post) }
+    context 'when the destroy method succeed' do
+      before { allow(PostsRepository).to receive(:destroy).and_return(post) }
 
-    it 'sends the destroy message to the post', :aggregate_failures do
-      call
-      expect(post).to have_received(:destroy).with(no_args)
-      expect(listener).to have_received(:destroy_success).with(post)
+      it 'sends the destroy message to the post', :aggregate_failures do
+        call
+        expect(PostsRepository).to have_received(:destroy).with(post)
+        expect(listener).to have_received(:destroy_success).with(post)
+      end
     end
 
     context 'when the destroy method fails' do
-      before { allow(post).to receive(:destroy).and_return(false) }
+      before { allow(PostsRepository).to receive(:destroy).and_return(false) }
 
       it 'notifies the listeners of the failure' do
         call

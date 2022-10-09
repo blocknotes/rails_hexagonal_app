@@ -12,16 +12,4 @@ class Post < ApplicationRecord
 
   scope :published, -> { where.not(published_at: nil) }
   scope :recents, -> { where('created_at > ?', 3.months.ago) }
-
-  def short_title(**args)
-    title.truncate(args[:count] || 10)
-  end
-
-  def tags_list
-    tags.map(&:name).join(', ')
-  end
-
-  def upper_title
-    title.upcase
-  end
 end

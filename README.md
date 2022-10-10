@@ -1,24 +1,12 @@
-# README
+# Test Rails app using hexagonal architecture
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is a test project to apply some hexagonal architecture patterns to a Rails application.
 
-Things you may want to cover:
+### Details
 
-* Ruby version
+Please take a look at the commits history for the details.
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+They propose the following changes:
+- add some service objects to a sample app;
+- add some service adapters;
+- add some listeners to the service objects.
